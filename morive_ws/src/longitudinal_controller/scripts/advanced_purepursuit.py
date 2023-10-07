@@ -9,7 +9,7 @@ from tf.transformations import euler_from_quaternion
 
 from geometry_msgs.msg import Point
 from nav_msgs.msg import Odometry, Path
-from morai_msgs.msg import CtrlCmd, EgoVehicleStatus, ObjectStatusList, EventInfo
+from morai_msgs.msg import CtrlCmd, EgoVehicleStatus, ObjectStatusList, EventInfo, Lamps
 from morai_msgs.srv import MoraiEventCmdSrv
 
 # advanced_purepursuit 은 차량의 차량의 종 횡 방향 제어 예제입니다.
@@ -28,44 +28,16 @@ from morai_msgs.srv import MoraiEventCmdSrv
 # 7. 곡률 기반 속도 계획
 # 8. 제어입력 메세지 Publish
 
-class park:
-    def __init__(self):
-        rospy.init_node('park', anonymous=True)
-        self.ctrl_cmd_pub = rospy.Publisher('ctrl_cmd', CtrlCmd, queue_size=1)
-
-    def ctrl_pub(self, accel_value, brake_value):
-
-        self.ctrl_cmd_msg = CtrlCmd()
-        self.ctrl_cmd_msg.longlCmdType = 1
-
-        self.ctrl_cmd_msg.accel = accel_value
-        self.ctrl_cmd_msg.brake = brake_value
-
-        rospy.sleep(0.1)
-        self.ctrl_cmd_pub.publish(self.ctrl_cmd_msg)
-
-    
-    def call_service(self, gear_value):
-        rospy.wait_for_service('Service_MoraiEventCmd')
-        try:
-            service_client = rospy.ServiceProxy('Service_MoraiEventCmd', MoraiEventCmdSrv)
-            request_data = EventInfo()
-            request_data.gear = gear_value  # P 기어로 설정
-            response = service_client(request_data)
-            return response
-        
-        except rospy.ServiceException as e:
-            print("Service call failed: %s" % e)
-            return None
-
 
 class pure_pursuit:
     def __init__(self):
+
+
         rospy.init_node('pure_pursuit', anonymous=True)
 
         # TODO: (1) subscriber, publisher 선언
         rospy.Subscriber("/global_path", Path, self.global_path_callback)
-        rospy.Subscriber("/lattice_path", Path, self.path_callback)
+        rospy.Subscriber("/local_path", Path, self.path_callback)
 
         rospy.Subscriber("/odom", Odometry, self.odom_callback)
         rospy.Subscriber("/Ego_topic", EgoVehicleStatus, self.status_callback)
@@ -80,7 +52,6 @@ class pure_pursuit:
         self.is_status = False
         self.is_global_path = False
 
-        self.is_look_forward_point = False
 
         self.forward_point = Point()
         self.current_postion = Point()
@@ -105,6 +76,7 @@ class pure_pursuit:
 
         rate = rospy.Rate(30)  # 30hz
         while not rospy.is_shutdown():
+            
 
             if self.is_path == True and self.is_odom == True and self.is_status == True:
                 prev_time = time.time()
@@ -126,16 +98,22 @@ class pure_pursuit:
                 for object in self.object_msg.npc_list:
                     dis_list.append(sqrt(pow(self.status_msg.position.x - object.position.x, 2) +
                                          pow(self.status_msg.position.y - object.position.y, 2)))
-                nearest_dis = min(dis_list)
-                nearest_index = dis_list.index(nearest_dis)
-                heading_difference = abs(self.object_msg.npc_list[nearest_index].heading - self.status_msg.heading)
+                if not dis_list:
+                    #rospy.logwarn("No objects in npc_list")
+                    nearest_dis=300.0
+                    heading_difference=0.0
+                else:
+                    nearest_dis = min(dis_list)
+                    nearest_index = dis_list.index(nearest_dis)
+                    heading_difference = abs(self.object_msg.npc_list[nearest_index].heading - self.status_msg.heading)
 
-                #(x,y)case
+
+                    
                 #line change
                 if (self.status_msg.position.x > 160.0 and self.status_msg.position.x < 230.0 
                     and self.status_msg.position.y > 1020.0 and self.status_msg.position.y <1780.0 ):
                     
-                    print('case 2')
+                    rospy.loginfo('case 2')
 
 
                     # same heading degree
@@ -144,7 +122,7 @@ class pure_pursuit:
                             self.ctrl_cmd_msg.accel = 0.0
                             self.ctrl_cmd_msg.brake = 1.0
 
-                            print('#############brake##############')
+                            rospy.loginfo('#############brake##############')
 
 
                         else:
@@ -168,15 +146,16 @@ class pure_pursuit:
                         else:
                             self.ctrl_cmd_msg.accel = 0.0
                             self.ctrl_cmd_msg.brake = -output
+
                 #before circle
                 elif (self.status_msg.position.x > -14.0 and self.status_msg.position.x < 40.0
                     and self.status_msg.position.y > 960.0 and self.status_msg.position.y <1020.0):
 
-                    print('case 3-1')
+                    rospy.loginfo('case 3-1')
 
 
                     if output > 0.0:
-                        self.ctrl_cmd_msg.accel = output/15.0
+                        self.ctrl_cmd_msg.accel = output/30.0
                         self.ctrl_cmd_msg.brake = 0.0
 
                     else:
@@ -188,32 +167,21 @@ class pure_pursuit:
                     and self.status_msg.position.y > 990.0 and self.status_msg.position.y <1030.0):
 
 
-                    print('case 3')
+                    rospy.loginfo('case 3')
 
-
-                    if nearest_dis > 14.0:
-                        if output > 0.0:
-                            self.ctrl_cmd_msg.accel = output/15.0
-                            self.ctrl_cmd_msg.brake = 0.0
-
-                        else:
-                            self.ctrl_cmd_msg.accel = 0.0
-                            self.ctrl_cmd_msg.brake = -output
-                        print('#############brake##############')
-                        print('nearest_dis',nearest_dis)
-
-                    elif nearest_dis > 8.0:
+                    if nearest_dis > 9.0 and nearest_dis < 14.0:
 
                         self.ctrl_cmd_msg.accel = 0.0
                         self.ctrl_cmd_msg.brake = 1.0
 
-                        print('#############brake##############')
-                        print('nearest_dis',nearest_dis)
+                        rospy.loginfo('#############brake##############')
+                        rospy.loginfo('nearest_dis: %f', nearest_dis)
+
 
 
                     else:
                         if output > 0.0:
-                            self.ctrl_cmd_msg.accel = output/15.0
+                            self.ctrl_cmd_msg.accel = output/20.0
                             self.ctrl_cmd_msg.brake = 0.0
 
                         else:
@@ -224,7 +192,7 @@ class pure_pursuit:
                 elif (self.status_msg.position.x > -24.0 and self.status_msg.position.x < 4.0
                     and self.status_msg.position.y > 1020.0 and self.status_msg.position.y <1075.0):
 
-                    print('case 4')
+                    rospy.loginfo('case 4')
 
                     if output > 0.0:
                         self.ctrl_cmd_msg.accel = output/50.0
@@ -232,7 +200,51 @@ class pure_pursuit:
 
                     else:
                         self.ctrl_cmd_msg.accel = 0.0
-                        self.ctrl_cmd_msg.brake = -output
+                        self.ctrl_cmd_msg.brake = -output    
+
+
+                elif (self.status_msg.position.x > 17.0 and self.status_msg.position.x < 23.0
+                    and self.status_msg.position.y > 1050.0 and self.status_msg.position.y < 1060.0):
+
+                    rospy.loginfo('parking.......')
+
+                    # stop
+                    self.ctrl_cmd_msg.accel = 0.0
+                    self.ctrl_cmd_msg.brake = 1.0
+                    self.ctrl_cmd_pub.publish(self.ctrl_cmd_msg)
+                    rate.sleep()
+
+                    # R
+                    rospy.loginfo("drive in reverse....")
+                    response = self.call_service(2)
+                    if response:
+                        rospy.loginfo("Service called successfully.")
+                    else:
+                        rospy.logwarn("Service call failed.")
+                    self.ctrl_cmd_msg.steering = -3.625
+
+                    for i in range(100):
+                        self.ctrl_cmd_msg.accel = 1.0
+                        self.ctrl_cmd_msg.brake = 0.0
+                        
+                        self.ctrl_cmd_pub.publish(self.ctrl_cmd_msg)
+                        rate.sleep()
+
+                    # p
+                    self.ctrl_cmd_msg.steering = 0.0
+                    self.ctrl_cmd_msg.accel = 0.0
+                    self.ctrl_cmd_msg.brake = 0.0
+                    self.ctrl_cmd_pub.publish(self.ctrl_cmd_msg)
+                    rate.sleep()
+                    response = self.call_service(1)
+                    if response:
+                        rospy.loginfo("Service called successfully.")
+                    else:
+                        rospy.logwarn("Service call failed.")
+
+                    rospy.loginfo("Finished")
+                    
+                    rospy.signal_shutdown("Finished parking")
 
 
                 #parking
@@ -240,7 +252,7 @@ class pure_pursuit:
                     and self.status_msg.position.y > 1010.0 and self.status_msg.position.y <1075.0):
                     
 
-                    print('case 5')
+                    rospy.loginfo('case 5')
 
 
                     if output > 0.0:
@@ -252,7 +264,7 @@ class pure_pursuit:
                         self.ctrl_cmd_msg.brake = -output
                 
                 else:
-                    print('case 1')
+                    rospy.loginfo('case 1')
 
                     if output > 0.0:
                             self.ctrl_cmd_msg.accel = output
@@ -274,9 +286,35 @@ class pure_pursuit:
 
             rate.sleep()
 
+    def call_service(self, gear_value):
+        rospy.wait_for_service('Service_MoraiEventCmd')
+        try:
+            service_client = rospy.ServiceProxy('Service_MoraiEventCmd', MoraiEventCmdSrv)
+            request_data = EventInfo()
+
+            request_data.option = 2  # 임의로 설정한 기본 값. 실제 값을 확인하십시오.
+            request_data.ctrl_mode = 4  # 임의로 설정한 기본 값. 실제 값을 확인하십시오.
+            request_data.gear = gear_value
+            lamps_data = Lamps()
+            #lamps_data.header = Header(stamp=rospy.Time.now())  # 현재 시간을 header에 설정
+            lamps_data.turnSignal = 0  # 기본값
+            lamps_data.emergencySignal = 0  # 기본값
+            request_data.lamps = lamps_data
+            request_data.set_pause = False  # 임의로 설정한 기본 값. 실제 값을 확인하십시오.
+
+            response = service_client(request_data)
+            return response
+        
+        except rospy.ServiceException as e:
+            print("Service call failed: %s" % e)
+            return None
+
     def path_callback(self, msg):
         self.is_path = True
         self.path = msg
+    
+    #def location_callback(self, msg):
+
 
     def object_callback(self, msg):
         self.is_object = True
@@ -427,25 +465,9 @@ class velocityPlanning:
 
 if __name__ == '__main__':
     try:
+
         test_track = pure_pursuit()
-        test_park = park()
 
-        test_park.ctrl_pub(0.0,1.0)
-        time.sleep(2)
-
-        # R
-        response = test_park.call_service(2)
-        if response:
-            print("Gear:", response.gear)
-
-        test_park.ctrl_pub(1.0,0.0)
-        time.sleep(2)
-
-        # p
-        response = test_park.call_service(1)
-        if response:
-            print("Gear:", response.gear)
-        test_park.ctrl_pub(1.0,0.0)
 
     except rospy.ROSInterruptException:
         pass
