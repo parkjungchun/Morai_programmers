@@ -91,31 +91,15 @@ class pure_pursuit:
                 if self.is_look_forward_point:
                     self.ctrl_cmd_msg.steering = steering
                 else:
-                    #rospy.loginfo("no found forward point")
                     self.ctrl_cmd_msg.steering = steering #0.0 last
 
                 output = self.pid.pid(self.target_velocity, self.status_msg.velocity.x * 3.6)
 
-                # # heading, nearest
-                # dis_list = []
-                # for object in self.object_msg.npc_list:
-                #     dis_list.append(sqrt(pow(self.status_msg.position.x - object.position.x, 2) +
-                #                          pow(self.status_msg.position.y - object.position.y, 2)))
-                # if not dis_list:
-                #     #rospy.logwarn("No objects in npc_list")
-                #     nearest_dis=300.0
-                #     heading_difference=0.0
-                # else:
-                #     nearest_dis = min(dis_list)
-                #     nearest_index = dis_list.index(nearest_dis)
-                #     heading_difference = abs(self.object_msg.npc_list[nearest_index].heading - self.status_msg.heading)
-                # heading, nearest
                 npc_positions = np.array([(object.position.x, object.position.y) for object in self.object_msg.npc_list])
                 ego_position = np.array([self.status_msg.position.x, self.status_msg.position.y])
 
                 squared_distances = np.sum((npc_positions - ego_position) ** 2, axis=1)
                 if squared_distances.size == 0:
-                    #rospy.logwarn("No objects in npc_list")
                     nearest_dis = 90000.0
                     heading_difference = 0.0
                 else:
@@ -132,7 +116,7 @@ class pure_pursuit:
                     
                     #rospy.loginfo("heading %d", heading_difference)
                     #rospy.loginfo("distance %d", nearest_dis)
-                    rospy.loginfo('2-1')
+                    #rospy.loginfo('2-1')
                     # same heading degree
                     if heading_difference > 2.0:
                         if nearest_dis < 50.0:
@@ -234,7 +218,7 @@ class pure_pursuit:
                     #rospy.loginfo("distance %d", nearest_dis)
                     #rospy.loginfo("heading %d", self.status_msg.heading)
                     if nearest_dis < 81.0:
-                        if self.status_msg.heading > 97:
+                        if self.status_msg.heading > 95:
                             self.ctrl_cmd_msg.accel = 0.0
                             self.ctrl_cmd_msg.brake = 1.0
 
@@ -258,6 +242,9 @@ class pure_pursuit:
                         self.ctrl_cmd_msg.accel = output/self.time
                         self.ctrl_cmd_msg.brake = 0.0
                         self.time += 0.3
+                        if self.time > 50:
+                            self.time = 50
+                        
 
                     else:
                         self.ctrl_cmd_msg.accel = 0.0
@@ -292,7 +279,7 @@ class pure_pursuit:
                     # R
                     rospy.loginfo("drive in reverse....")
 
-                    for i in range(30):
+                    for i in range(5):
                         response = self.call_service(2)
                         self.ctrl_cmd_msg.steering = 3.625
                         self.ctrl_cmd_msg.accel = 0.1
@@ -389,8 +376,7 @@ class pure_pursuit:
     def path_callback(self, msg):
         self.is_path = True
         self.path = msg
-    
-    #def location_callback(self, msg):
+
 
 
     def object_callback(self, msg):
