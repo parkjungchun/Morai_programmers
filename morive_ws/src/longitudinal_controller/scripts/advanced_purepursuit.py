@@ -54,6 +54,7 @@ class pure_pursuit:
         self.is_global_path = False
         self.is_go = False
         self.time = 1
+        self.parking_time=1
         #self.previous_data = deque(maxlen=30)
 
         self.forward_point = Point()
@@ -107,61 +108,21 @@ class pure_pursuit:
                     nearest_dis = squared_distances[nearest_index]
                     heading_difference = abs(self.object_msg.npc_list[nearest_index].heading - self.status_msg.heading)
 
-                # if (self.status_msg.position.x > 160.0 and self.status_msg.position.x < 230.0 
-                #     and self.status_msg.position.y > 1020.0 and self.status_msg.position.y <1780.0 ):
-
-                #after tollgate
-                if (self.status_msg.position.x > 160.0 and self.status_msg.position.x < 210.0 
-                    and self.status_msg.position.y > 1020.0 and self.status_msg.position.y <1120.0 ):
-                    
-                    #rospy.loginfo("heading %d", heading_difference)
-                    #rospy.loginfo("distance %d", nearest_dis)
-                    #rospy.loginfo('2-1')
-                    # same heading degree
-                    if heading_difference > 2.0:
-                        if nearest_dis < 50.0:
-                            self.ctrl_cmd_msg.accel = 0.0
-                            self.ctrl_cmd_msg.brake = 1.0
-
-                            rospy.loginfo('#############brake##############')
-
-                        else:
-                            if output > 0.0:
-                                self.ctrl_cmd_msg.accel = output
-                                self.ctrl_cmd_msg.brake = 0.0
-                                # morive brake tunning
-                            elif -5.0 < output <= 0.0:
-                                self.ctrl_cmd_msg.accel = 0.0
-                                self.ctrl_cmd_msg.brake = 0.0
-
-                            else:
-                                self.ctrl_cmd_msg.accel = 0.0
-                                self.ctrl_cmd_msg.brake = -output
-                    else:
-                        #rospy.loginfo("output' %s", output)
-
-                        
-                        if output > 0.0:
-                            self.ctrl_cmd_msg.accel = output
-                            self.ctrl_cmd_msg.brake = 0.0
-
-                        # morive brake tunning
-                        elif -5.0 < output <= 0.0:
-                            self.ctrl_cmd_msg.accel = 0.0
-                            self.ctrl_cmd_msg.brake = 0.0
-
-                        else:
-                            self.ctrl_cmd_msg.accel = 0.0
-                            self.ctrl_cmd_msg.brake = -output
+                # #after tollgate
+                # if (self.status_msg.position.x > 160.0 and self.status_msg.position.x < 210.0 
+                #     and self.status_msg.position.y > 1020.0 and self.status_msg.position.y <1120.0 ):
+                #     # same heading degree
+                #     if heading_difference > 2.0:
+                #         if nearest_dis < 50.0:
 
                 #line change
-                if (self.status_msg.position.x > 210.0 and self.status_msg.position.x < 230.0 
-                    and self.status_msg.position.y > 1120.0 and self.status_msg.position.y <1780.0 ):
+                # if (self.status_msg.position.x > 210.0 and self.status_msg.position.x < 230.0 
+                #     and self.status_msg.position.y > 1120.0 and self.status_msg.position.y <1780.0 ):
+                
+                if (self.status_msg.position.x > 160.0 and self.status_msg.position.x < 230.0 
+                     and self.status_msg.position.y > 1020.0 and self.status_msg.position.y <1780.0 ): 
+                    rospy.loginfo('case 2')
                     
-                    #rospy.loginfo('case 2')
-                    
-
-
                     # same heading degree
                     if heading_difference > 1.0:
                         if nearest_dis < 25.0:
@@ -205,7 +166,7 @@ class pure_pursuit:
                     and self.status_msg.position.y > 980.0 and self.status_msg.position.y < 1030.0):
                     
 
-                    #rospy.loginfo('case 3')
+                    rospy.loginfo('case 3')
                     if (self.status_msg.position.x > -25.0 and self.status_msg.position.x < -22.0 
                        and self.status_msg.position.y > 1006.0 and self.status_msg.position.y < 1010.0) and self.is_go == False :
                         for i in range(90) :
@@ -217,7 +178,7 @@ class pure_pursuit:
                     
                     #rospy.loginfo("distance %d", nearest_dis)
                     #rospy.loginfo("heading %d", self.status_msg.heading)
-                    if nearest_dis < 81.0:
+                    if nearest_dis > 28.0 and nearest_dis < 81.0:
                         if self.status_msg.heading > 95:
                             self.ctrl_cmd_msg.accel = 0.0
                             self.ctrl_cmd_msg.brake = 1.0
@@ -234,9 +195,11 @@ class pure_pursuit:
                             self.ctrl_cmd_msg.brake = -output
 
                 elif (self.status_msg.position.x > -17.0 and self.status_msg.position.x < 40.0
-                    and self.status_msg.position.y > 950.0 and self.status_msg.position.y <1030.0):
+                    and self.status_msg.position.y > 950.0 and self.status_msg.position.y <1020.0):
 
-                    #rospy.loginfo('case 3-1')
+                    rospy.loginfo('case 3-1')
+                    #rospy.loginfo('output %f',output)
+
 		
                     if output > 0.0:
                         self.ctrl_cmd_msg.accel = output/self.time
@@ -252,9 +215,10 @@ class pure_pursuit:
 
                 #before parking
                 elif (self.status_msg.position.x > -24.0 and self.status_msg.position.x < 4.0
-                    and self.status_msg.position.y > 1020.0 and self.status_msg.position.y <1075.0):
+                    and self.status_msg.position.y > 1024.3 and self.status_msg.position.y <1075.0):
 
-                    #rospy.loginfo('case 4')
+                    rospy.loginfo('case 4')
+                    
 
                     if output > 0.0:
                         self.ctrl_cmd_msg.accel = output/50.0
@@ -263,30 +227,39 @@ class pure_pursuit:
                     else:
                         self.ctrl_cmd_msg.accel = 0.0
                         self.ctrl_cmd_msg.brake = -output    
-
-
-                elif (self.status_msg.position.x > 16.0 and self.status_msg.position.x < 22.0
-                    and self.status_msg.position.y > 1052.0 and self.status_msg.position.y < 1056.0):
+                        
+                #5.7 and self.status_msg.position.x < 6.5
+                elif (self.status_msg.position.x > 4.7 and self.status_msg.position.x < 5.7
+                    and self.status_msg.position.y > 1023.7 and self.status_msg.position.y < 1024.7):
 
                     rospy.loginfo('parking.......')
 
                     # stop
-                    self.ctrl_cmd_msg.accel = 0.0
-                    self.ctrl_cmd_msg.brake = 1.0
-                    self.ctrl_cmd_pub.publish(self.ctrl_cmd_msg)
-                    rate.sleep()
+                    start = time.time()
+                    while True:
+                        response = self.call_service(2)
+                        self.ctrl_cmd_msg.accel = 0.0
+                        self.ctrl_cmd_msg.brake = 1.0
+                        self.ctrl_cmd_pub.publish(self.ctrl_cmd_msg)
+                        if (time.time() - start > 2):
+                            break
 
                     # R
                     rospy.loginfo("drive in reverse....")
-
-                    for i in range(5):
-                        response = self.call_service(2)
-                        self.ctrl_cmd_msg.steering = 3.625
-                        self.ctrl_cmd_msg.accel = 0.1
+                    while True:
+                        self.ctrl_cmd_msg.steering = -0.555
+                        self.ctrl_cmd_msg.accel = 0.2
                         self.ctrl_cmd_msg.brake = 0.0
-                        
                         self.ctrl_cmd_pub.publish(self.ctrl_cmd_msg)
-                        rate.sleep()
+                        if (time.time() - start > 9):
+                            break
+                    while True:
+                        self.ctrl_cmd_msg.steering = 0.0
+                        self.ctrl_cmd_msg.accel = 0.2
+                        self.ctrl_cmd_msg.brake = 0.0
+                        self.ctrl_cmd_pub.publish(self.ctrl_cmd_msg)
+                        if (time.time() - start > 11):
+                            break
 
                     # p
                     self.ctrl_cmd_msg.steering = 0.0
@@ -304,25 +277,27 @@ class pure_pursuit:
                     
                     rospy.signal_shutdown("Finished parking")
 
-
                 #parking
                 elif (self.status_msg.position.x > -15.0 and self.status_msg.position.x < 45.0
                     and self.status_msg.position.y > 1010.0 and self.status_msg.position.y <1075.0):
                     
 
-                    #rospy.loginfo('case 5')
+                    rospy.loginfo('case 5')
+                    #rospy.loginfo('output %f',output)
 
-
+                    
                     if output > 0.0:
-                        self.ctrl_cmd_msg.accel = output/60.0                   
+                        
+                        self.ctrl_cmd_msg.accel = 10.0 / self.parking_time                  
                         self.ctrl_cmd_msg.brake = 0.0
+                        self.parking_time += 0.3
 
                     else:
                         self.ctrl_cmd_msg.accel = 0.0
                         self.ctrl_cmd_msg.brake = -output
                 
                 else:
-                    #rospy.loginfo('case 1')
+                    rospy.loginfo('case 1')
                     #
                     # rospy.loginfo("output' %s", output)
 
