@@ -121,7 +121,7 @@ class pure_pursuit:
                 
                 if (self.status_msg.position.x > 160.0 and self.status_msg.position.x < 230.0 
                      and self.status_msg.position.y > 1020.0 and self.status_msg.position.y <1780.0 ): 
-                    rospy.loginfo('case 2')
+                    #rospy.loginfo('case 2')
                     
                     # same heading degree
                     if heading_difference > 1.0:
@@ -166,7 +166,7 @@ class pure_pursuit:
                     and self.status_msg.position.y > 980.0 and self.status_msg.position.y < 1030.0):
                     
 
-                    rospy.loginfo('case 3')
+                    #rospy.loginfo('case 3')
                     if (self.status_msg.position.x > -25.0 and self.status_msg.position.x < -22.0 
                        and self.status_msg.position.y > 1006.0 and self.status_msg.position.y < 1010.0) and self.is_go == False :
                         for i in range(90) :
@@ -217,7 +217,7 @@ class pure_pursuit:
                 elif (self.status_msg.position.x > -24.0 and self.status_msg.position.x < 4.0
                     and self.status_msg.position.y > 1024.3 and self.status_msg.position.y <1075.0):
 
-                    rospy.loginfo('case 4')
+                    #rospy.loginfo('case 4')
                     
 
                     if output > 0.0:
@@ -258,7 +258,7 @@ class pure_pursuit:
                         self.ctrl_cmd_msg.accel = 0.2
                         self.ctrl_cmd_msg.brake = 0.0
                         self.ctrl_cmd_pub.publish(self.ctrl_cmd_msg)
-                        if (time.time() - start > 11):
+                        if (time.time() - start > 11.5):
                             break
 
                     # p
@@ -282,7 +282,7 @@ class pure_pursuit:
                     and self.status_msg.position.y > 1010.0 and self.status_msg.position.y <1075.0):
                     
 
-                    rospy.loginfo('case 5')
+                    #rospy.loginfo('case 5')
                     #rospy.loginfo('output %f',output)
 
                     
@@ -297,7 +297,7 @@ class pure_pursuit:
                         self.ctrl_cmd_msg.brake = -output
                 
                 else:
-                    rospy.loginfo('case 1')
+                    #rospy.loginfo('case 1')
                     #
                     # rospy.loginfo("output' %s", output)
 
