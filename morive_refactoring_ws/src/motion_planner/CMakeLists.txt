@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(planner)
+project(motion_planner)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -103,7 +103,7 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES planner
+#  LIBRARIES motion_planner
   CATKIN_DEPENDS message_runtime
 #  DEPENDS system_lib
 )
@@ -121,7 +121,7 @@ include_directories(
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/planner.cpp
+#   src/${PROJECT_NAME}/motion_planner.cpp
 # )
 
 ## Add cmake target dependencies of the library

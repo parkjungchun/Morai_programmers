@@ -2,8 +2,12 @@
     <node pkg="path_planner" type="global_path_pub.py" name="global_path_pub"  />
     <node pkg="path_planner" type="local_path_pub.py" name="local_path_pub" />
 
-    <node pkg="planner" type="rule_based_planner.py" name="rule_based_planner" output="screen"/>
+    <node pkg="controller" type="lateral_controller.py" name="lateral_controller" output="screen"/>
     <node pkg="controller" type="longitudinal_controller.py" name="longitudinal_controller" output="screen"/>
+    <node pkg="controller" type="pid_controller.py" name="pid_controller" output="screen"/>
+    <node pkg="object_detector" type="object_detector.py" name="object_detector" output="screen"/>
+
+    <node pkg="motion_planner" type="rule_based_planner.py" name="rule_based_planner" output="screen"/>
 
     <node pkg="state_estimator" type="gpsimu_parser.py" name="GPS_IMU_parser" />
 

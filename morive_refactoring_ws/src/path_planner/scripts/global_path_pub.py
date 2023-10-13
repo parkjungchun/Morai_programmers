@@ -9,10 +9,10 @@ import copy
 from geometry_msgs.msg import PoseStamped
 from nav_msgs.msg import Path
 
-current_path = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.join(current_path, '..', '..', 'map_loader', 'scripts'))
+current_path = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(current_path)
 
-from map_loader.scripts.lib.mgeo.class_defs import *
+from lib.mgeo.class_defs import *
 
 class dijkstra_path_pub :
     def __init__(self):
