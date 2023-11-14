@@ -6,7 +6,11 @@
 
 동영상 : 
 
-Uploading 제목 없는 동영상 - Clipchamp로 제작.mp4…
+
+https://github.com/parkjungchun/ProgrammersDevcourse_Morai/assets/116256927/5e2b6f90-2768-47bd-9b43-75448ed21070
+
+
+
 
 
 
