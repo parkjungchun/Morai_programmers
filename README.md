@@ -17,7 +17,7 @@ https://github.com/parkjungchun/ProgrammersDevcourse_Morai/assets/116256927/5e2b
 
 
 
-## 그동안 한 작업들 정리. 
+## Time Line 
 
 ### 1. 09-05 ~ 09-10.
   - MORAI 시뮬레이터 연결.
