@@ -1,7 +1,7 @@
 # MORAI_programmers
 ## Autonomous driving in MORAI Simulator
 
-README : https://drive.google.com/file/d/11LUrzVWrAPrdVIiaTH0_XNDzFj9wsava/view?usp=sharing
+About Project : https://drive.google.com/file/d/11LUrzVWrAPrdVIiaTH0_XNDzFj9wsava/view?usp=sharing
 
 Driving Video : 
 
