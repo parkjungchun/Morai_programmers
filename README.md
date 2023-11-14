@@ -3,9 +3,9 @@
 # MORAI_programmers
 ## Autonomous driving in MORAI Simulator
 
-정리자료 : https://drive.google.com/file/d/11LUrzVWrAPrdVIiaTH0_XNDzFj9wsava/view?usp=sharing
+README : https://drive.google.com/file/d/11LUrzVWrAPrdVIiaTH0_XNDzFj9wsava/view?usp=sharing
 
-주행 영상 : 
+Driving Video : 
 
 
 https://github.com/parkjungchun/ProgrammersDevcourse_Morai/assets/116256927/5e2b6f90-2768-47bd-9b43-75448ed21070
