@@ -2,7 +2,10 @@
 
 # Morai_programmers
 ## README
-https://drive.google.com/file/d/11LUrzVWrAPrdVIiaTH0_XNDzFj9wsava/view?usp=sharing
+정리자료 : https://drive.google.com/file/d/11LUrzVWrAPrdVIiaTH0_XNDzFj9wsava/view?usp=sharing
+동영상 : 
+
+
 
 ## 그동안 한 작업들 정리. 
 
