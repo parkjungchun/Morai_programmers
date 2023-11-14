@@ -1,10 +1,11 @@
 <img width="1773" alt="image" src="https://github.com/prgrms-ad-devcourse/ad-control1-finalproject-team4/assets/81940197/90a2f16a-0eda-4003-8496-391a5457987a">
 
-# Morai_programmers
-## README
+# MORAI_programmers
+## Autonomous driving in MORAI Simulator
+
 정리자료 : https://drive.google.com/file/d/11LUrzVWrAPrdVIiaTH0_XNDzFj9wsava/view?usp=sharing
 
-동영상 : 
+주행 영상 : 
 
 
 https://github.com/parkjungchun/ProgrammersDevcourse_Morai/assets/116256927/5e2b6f90-2768-47bd-9b43-75448ed21070
