@@ -1,5 +1,3 @@
-<img width="1773" alt="image" src="https://github.com/prgrms-ad-devcourse/ad-control1-finalproject-team4/assets/81940197/90a2f16a-0eda-4003-8496-391a5457987a">
-
 # MORAI_programmers
 ## Autonomous driving in MORAI Simulator
 
