@@ -3,7 +3,12 @@
 # Morai_programmers
 ## README
 정리자료 : https://drive.google.com/file/d/11LUrzVWrAPrdVIiaTH0_XNDzFj9wsava/view?usp=sharing
+
 동영상 : 
+
+Uploading 제목 없는 동영상 - Clipchamp로 제작.mp4…
+
+
 
 
 
